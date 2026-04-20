@@ -19,7 +19,6 @@ app.get('/', (req, res) => {
   res.json({ status: 'Normx-AI online', providers: ['groq', 'anthropic', 'openai', 'gemini'] });
 });
 
-// ── GROQ ──
 async function callGroq(messages) {
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -39,7 +38,6 @@ async function callGroq(messages) {
   return data.choices?.[0]?.message?.content || '';
 }
 
-// ── CLAUDE (Anthropic) ──
 async function callClaude(messages) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -61,7 +59,6 @@ async function callClaude(messages) {
   return data.content?.[0]?.text || '';
 }
 
-// ── OPENAI (ChatGPT) ──
 async function callOpenAI(messages) {
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -81,7 +78,6 @@ async function callOpenAI(messages) {
   return data.choices?.[0]?.message?.content || '';
 }
 
-// ── GEMINI ──
 async function callGemini(messages) {
   const geminiMsgs = messages.map(m => ({
     role: m.role === 'assistant' ? 'model' : 'user',
@@ -104,7 +100,6 @@ async function callGemini(messages) {
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
-// ── CHAT ENDPOINT ──
 app.post('/chat', async (req, res) => {
   const { messages, provider } = req.body;
 
@@ -118,16 +113,16 @@ app.post('/chat', async (req, res) => {
     let reply = '';
 
     if (prov === 'groq') {
-      if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY no configurada en el servidor');
+      if (!process.env.GROQ_API_KEY) throw new Error('GROQ_API_KEY no configurada');
       reply = await callGroq(messages);
     } else if (prov === 'anthropic') {
-      if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY no configurada en el servidor');
+      if (!process.env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY no configurada en Railway');
       reply = await callClaude(messages);
     } else if (prov === 'openai') {
-      if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY no configurada en el servidor');
+      if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY no configurada en Railway');
       reply = await callOpenAI(messages);
     } else if (prov === 'gemini') {
-      if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY no configurada en el servidor');
+      if (!process.env.GEMINI_API_KEY) throw new Error('GEMINI_API_KEY no configurada en Railway');
       reply = await callGemini(messages);
     } else {
       throw new Error('Proveedor no válido: ' + prov);
@@ -141,4 +136,4 @@ app.post('/chat', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log('Normx-AI online — puerto ' + PORT));
+app.listen(PORT, () => console.log('Normx-AI online — puerto ' + PORT));;
